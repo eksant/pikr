@@ -130,6 +130,7 @@ CLAUDE.md
 docs/
 .DS_Store
 *.vsix
+vsix/
 .vscode/
 
 # yarn v3

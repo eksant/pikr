@@ -11,6 +11,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+const outDir = path.join(__dirname, '..', 'vsix');
+fs.mkdirSync(outDir, { recursive: true });
+
 const PLATFORM_TARGETS = {
   darwin: ['darwin-arm64', 'darwin-x64'],
   linux: ['linux-x64'],
@@ -42,7 +45,7 @@ for (const dir of toRemove) {
 try {
   for (const target of PLATFORM_TARGETS[platform]) {
     console.log(`\nPackaging for ${target}...`);
-    execSync(`vsce package --target ${target}`, { stdio: 'inherit' });
+    execSync(`vsce package --target ${target} --out vsix/`, { stdio: 'inherit' });
   }
 } finally {
   // Always restore

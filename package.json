@@ -90,7 +90,7 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest run",
     "vscode:prepublish": "npm run build",
-    "package": "vsce package",
+    "package": "mkdir -p vsix && vsce package --out vsix/",
     "package:darwin": "node scripts/package-platform.js darwin",
     "package:linux": "node scripts/package-platform.js linux",
     "package:win": "node scripts/package-platform.js win32"
