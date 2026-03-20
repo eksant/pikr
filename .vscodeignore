@@ -10,6 +10,13 @@ tsconfig.json
 **/*.ts
 !dist/**
 node_modules/**
+!node_modules/onnxruntime-node/**
+!node_modules/@onnxruntime/**
+!node_modules/@lancedb/**
+!node_modules/vectordb/**
+!node_modules/tree-sitter/**
+!node_modules/tree-sitter-typescript/**
+!node_modules/tree-sitter-javascript/**
 docs/**
 CLAUDE.md
 images/icon.svg
