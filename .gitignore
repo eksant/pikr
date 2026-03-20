@@ -130,6 +130,7 @@ CLAUDE.md
 docs/
 .DS_Store
 *.vsix
+.vscode/
 
 # yarn v3
 .pnp.*
