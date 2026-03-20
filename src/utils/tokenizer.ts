@@ -1,7 +1,8 @@
-import { getEncoding } from 'js-tiktoken';
+import { getEncoding, Tiktoken } from 'js-tiktoken';
 
-const enc = getEncoding('cl100k_base');
+let enc: Tiktoken | undefined;
 
 export function countTokens(text: string): number {
+  if (!enc) enc = getEncoding('cl100k_base');
   return enc.encode(text).length;
 }

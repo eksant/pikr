@@ -18,7 +18,7 @@ const extensionCtx = esbuild.context({
   format: 'cjs',
   platform: 'node',
   target: 'node20',
-  sourcemap: true,
+  sourcemap: watch,
   minify: !watch,
   logLevel: 'info',
 });
@@ -31,7 +31,7 @@ const mcpCtx = esbuild.context({
   format: 'cjs',
   platform: 'node',
   target: 'node20',
-  sourcemap: true,
+  sourcemap: watch,
   minify: !watch,
   logLevel: 'info',
 });

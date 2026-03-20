@@ -24,8 +24,8 @@ export class FileWatcher implements vscode.Disposable {
     this.watcher.onDidCreate((uri) => this.schedule(uri.fsPath, 'create'));
     this.watcher.onDidDelete((uri) => this.scheduleDelete(uri.fsPath));
 
-    // Index existing files on startup
-    this.indexWorkspace();
+    // Defer initial indexing so extension activation returns immediately
+    setTimeout(() => this.indexWorkspace(), 5000);
   }
 
   reindex(): void {

@@ -9,6 +9,7 @@ tsconfig.json
 **/*.map
 **/*.ts
 !dist/**
+dist/**/*.map
 node_modules/**
 !node_modules/onnxruntime-node/**
 !node_modules/@onnxruntime/**

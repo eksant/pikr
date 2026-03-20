@@ -2,7 +2,7 @@
   "name": "pikr",
   "displayName": "pikr",
   "description": "Pick the right context — local RAG for AI coding tools",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "eksant",
   "repository": {
     "type": "git",
@@ -83,13 +83,17 @@
     }
   },
   "scripts": {
-    "build": "node esbuild.js",
+    "build": "rm -f dist/*.map && node esbuild.js",
     "watch": "node esbuild.js --watch",
     "lint": "eslint src --ext ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest run",
-    "vscode:prepublish": "npm run build"
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package",
+    "package:darwin": "node scripts/package-platform.js darwin",
+    "package:linux": "node scripts/package-platform.js linux",
+    "package:win": "node scripts/package-platform.js win32"
   },
   "dependencies": {
     "@lancedb/lancedb": "^0.14.0",

@@ -40,7 +40,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   await vectorStore.open();
 
-  indexer = new Indexer(embedder, vectorStore, logger);
+  indexer = new Indexer(embedder, vectorStore, logger, storePath);
   fileWatcher = new FileWatcher(indexer, logger);
 
   const dashboard = new DashboardProvider(vectorStore, logger, context.extensionPath);
