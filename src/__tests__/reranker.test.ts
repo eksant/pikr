@@ -6,7 +6,11 @@ function vec(values: number[]): number[] {
   return values;
 }
 
-function makeChunk(id: string, vector: number[], overrides: Partial<ChunkRecord> = {}): ChunkRecord {
+function makeChunk(
+  id: string,
+  vector: number[],
+  overrides: Partial<ChunkRecord> = {},
+): ChunkRecord {
   return {
     id,
     vector,

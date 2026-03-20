@@ -57,7 +57,12 @@ export class ModelManager {
       const file = fs.createWriteStream(dest + '.tmp');
       https
         .get(url, (res) => {
-          if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          if (
+            res.statusCode &&
+            res.statusCode >= 300 &&
+            res.statusCode < 400 &&
+            res.headers.location
+          ) {
             file.close();
             if (fs.existsSync(dest + '.tmp')) fs.unlinkSync(dest + '.tmp');
             // Resolve any redirect URL (absolute, protocol-relative, or relative)

@@ -25,19 +25,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const config = vscode.workspace.getConfiguration('pikr');
 
   const pikrRoot = path.join(os.homedir(), '.pikr');
-  const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? context.globalStorageUri.fsPath;
+  const workspacePath =
+    vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? context.globalStorageUri.fsPath;
   const wsHash = crypto.createHash('sha256').update(workspacePath).digest('hex').slice(0, 16);
   const storePath = path.join(pikrRoot, wsHash);
 
   const modelManager = new ModelManager(pikrRoot, logger);
   const embedder = new Embedder(modelManager, logger);
   const vectorStore = new VectorStore(storePath, logger);
-  const retriever = new Retriever(
-    embedder,
-    vectorStore,
-    config.get('topK', 20),
-    logger,
-    () => vscode.window.visibleTextEditors.map((e) => e.document.uri.fsPath),
+  const retriever = new Retriever(embedder, vectorStore, config.get('topK', 20), logger, () =>
+    vscode.window.visibleTextEditors.map((e) => e.document.uri.fsPath),
   );
   const contextBuilder = new ContextBuilder(config.get('tokenBudget', 4000));
 

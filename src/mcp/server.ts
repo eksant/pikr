@@ -3,10 +3,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { ConsoleLogger } from '../utils/logger';
 import { ModelManager } from '../embedder/model-manager';
 import { Embedder } from '../embedder/embedder';
@@ -25,10 +22,7 @@ const embedder = new Embedder(modelManager, logger);
 const vectorStore = new VectorStore(storePath, logger);
 const retriever = new Retriever(embedder, vectorStore, 20, logger);
 
-const server = new Server(
-  { name: 'pikr', version: '0.1.0' },
-  { capabilities: { tools: {} } },
-);
+const server = new Server({ name: 'pikr', version: '0.1.0' }, { capabilities: { tools: {} } });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
@@ -43,7 +37,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         properties: {
           query: {
             type: 'string',
-            description: 'Describe what you are looking for (e.g. "auth middleware", "database connection setup")',
+            description:
+              'Describe what you are looking for (e.g. "auth middleware", "database connection setup")',
           },
           tokenBudget: {
             type: 'number',

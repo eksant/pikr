@@ -48,7 +48,11 @@ const LANG_CONFIGS: Record<string, LangConfig> = {
       { re: /^(?:pub(?:\([^)]*\))?\s+)?(?:struct|enum)\s+(\w+)/, nameIdx: 1, kind: 'class' },
       { re: /^(?:pub(?:\([^)]*\))?\s+)?trait\s+(\w+)/, nameIdx: 1, kind: 'interface' },
       // impl Type or impl Trait for Type — capture the rightmost type name
-      { re: /^(?:pub(?:\([^)]*\))?\s+)?impl(?:\s+\w+(?:<[^>]*>)?\s+for)?\s+(\w+)/, nameIdx: 1, kind: 'class' },
+      {
+        re: /^(?:pub(?:\([^)]*\))?\s+)?impl(?:\s+\w+(?:<[^>]*>)?\s+for)?\s+(\w+)/,
+        nameIdx: 1,
+        kind: 'class',
+      },
     ],
   },
   '.php': {

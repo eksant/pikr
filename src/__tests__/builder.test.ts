@@ -53,7 +53,12 @@ describe('ContextBuilder', () => {
 
   it('formats output with file path and chunk metadata header', () => {
     const builder = new ContextBuilder(4000);
-    const chunk = makeChunk({ filePath: '/src/auth.ts', startLine: 5, kind: 'function', name: 'login' });
+    const chunk = makeChunk({
+      filePath: '/src/auth.ts',
+      startLine: 5,
+      kind: 'function',
+      name: 'login',
+    });
     const result = builder.build([scored(chunk)]);
     expect(result.text).toContain('/src/auth.ts:5');
     expect(result.text).toContain('[function]');

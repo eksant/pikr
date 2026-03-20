@@ -18,7 +18,9 @@ export function registerCommands(
     vscode.commands.registerCommand('pikr.search', () =>
       cmdSearch(retriever, contextBuilder, dashboard, logger),
     ),
-    vscode.commands.registerCommand('pikr.reindex', () => cmdReindex(fileWatcher, dashboard, logger)),
+    vscode.commands.registerCommand('pikr.reindex', () =>
+      cmdReindex(fileWatcher, dashboard, logger),
+    ),
     vscode.commands.registerCommand('pikr.setBudget', () => cmdSetBudget()),
     vscode.commands.registerCommand('pikr.openDashboard', () =>
       vscode.commands.executeCommand('pikr.dashboardView.focus'),
