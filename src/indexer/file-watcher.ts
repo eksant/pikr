@@ -15,6 +15,7 @@ export class FileWatcher implements vscode.Disposable {
   constructor(
     private readonly indexer: Indexer,
     private readonly logger: ILogger,
+    private readonly onProgress?: (current: number, total: number) => void,
   ) {}
 
   start(): void {
@@ -61,6 +62,7 @@ export class FileWatcher implements vscode.Disposable {
   private async indexWorkspace(): Promise<void> {
     const uris = await vscode.workspace.findFiles(FILE_GLOB, `{${IGNORE_PATTERNS.join(',')}}`);
     this.logger.info(`Indexing ${uris.length} files...`);
+    this.onProgress?.(0, uris.length);
 
     // Index in batches to avoid hammering the embedder
     const BATCH = 20;
@@ -73,6 +75,7 @@ export class FileWatcher implements vscode.Disposable {
           }),
         ),
       );
+      this.onProgress?.(Math.min(i + BATCH, uris.length), uris.length);
     }
     this.logger.info('Initial indexing complete');
   }

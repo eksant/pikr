@@ -16,6 +16,7 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
   private tokensServed = 0;
   private modelStatus: 'loading' | 'ready' | 'error' = 'loading';
   private modelMessage = '';
+  private indexingProgress: { current: number; total: number } | null = null;
 
   constructor(
     private readonly store: VectorStore,
@@ -94,6 +95,11 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
     );
   }
 
+  setIndexingProgress(current: number, total: number): void {
+    this.indexingProgress = current >= total ? null : { current, total };
+    void this.pushStats();
+  }
+
   setModelStatus(status: 'loading' | 'ready' | 'error', message = ''): void {
     this.modelStatus = status;
     this.modelMessage = message;
@@ -137,6 +143,7 @@ export class DashboardProvider implements vscode.WebviewViewProvider {
       tokensServed: this.tokensServed,
       modelStatus: this.modelStatus,
       modelMessage: this.modelMessage,
+      indexingProgress: this.indexingProgress,
     });
   }
 
@@ -230,6 +237,30 @@ body {
 .dot.loading { background: #e8a630; animation: pulse 1.2s ease-in-out infinite; }
 .dot.error { background: var(--vscode-errorForeground, #f44); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Indexing progress */
+.indexing-progress {
+  margin-bottom: 12px;
+}
+.indexing-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  margin-bottom: 4px;
+}
+.progress-track {
+  height: 3px;
+  background: var(--vscode-panel-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--vscode-focusBorder);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
 
 /* Stat cards */
 .cards {
@@ -530,6 +561,16 @@ body {
     <span class="dot loading" id="modelDot"></span>
     <span id="modelMsg">Loading model...</span>
   </div>
+  <div id="indexingProgress" class="indexing-progress" style="display:none">
+    <div class="indexing-label">
+      <span>Indexing workspace...</span>
+      <span id="indexingText">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
   <div class="cards">
     <div class="card">
       <div class="card-value" id="fileCount">—</div>
@@ -731,6 +772,17 @@ body {
         document.getElementById('queriesServed').textContent = fmt(data.queriesServed);
         document.getElementById('tokensServed').textContent = fmt(data.tokensServed);
         document.getElementById('getStarted').style.display = data.chunkCount === 0 ? 'block' : 'none';
+        var progressBox = document.getElementById('indexingProgress');
+        if (data.indexingProgress) {
+          var pct = data.indexingProgress.total > 0
+            ? Math.round(data.indexingProgress.current / data.indexingProgress.total * 100) : 0;
+          document.getElementById('indexingText').textContent =
+            data.indexingProgress.current + ' / ' + data.indexingProgress.total;
+          document.getElementById('progressFill').style.width = pct + '%';
+          progressBox.style.display = 'block';
+        } else {
+          progressBox.style.display = 'none';
+        }
         var dot = document.getElementById('modelDot');
         var msg = document.getElementById('modelMsg');
         dot.className = 'dot ' + data.modelStatus;
