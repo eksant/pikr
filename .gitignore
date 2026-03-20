@@ -125,6 +125,12 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# pikr internal files — not for public repo
+CLAUDE.md
+docs/
+.DS_Store
+*.vsix
+
 # yarn v3
 .pnp.*
 .yarn/*

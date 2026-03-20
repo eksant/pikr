@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Stem -->
+  <rect x="2" y="2" width="5" height="20" rx="2.5" fill="currentColor"/>
+  <!-- Bowl: large arc clockwise, center (11,10) r=4.5, intersects stem right (x=7) at y≈7.94 and y≈12.06 -->
+  <path d="M7 7.94 A4.5 4.5 0 1 1 7 12.06"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"/>
+  <!-- Accent dot — bottom right, matches icon.svg -->
+  <circle cx="19" cy="20" r="2" fill="currentColor"/>
+</svg>

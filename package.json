@@ -1,0 +1,115 @@
+{
+  "name": "pikr",
+  "displayName": "pikr",
+  "description": "Pick the right context — local RAG for AI coding tools",
+  "version": "0.1.0",
+  "publisher": "eksant",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eksant/pikr"
+  },
+  "bugs": {
+    "url": "https://github.com/eksant/pikr/issues"
+  },
+  "homepage": "https://github.com/eksant/pikr#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "icon": "images/icon.png",
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pikr.search",
+        "title": "pikr: Search context"
+      },
+      {
+        "command": "pikr.reindex",
+        "title": "pikr: Reindex workspace"
+      },
+      {
+        "command": "pikr.setBudget",
+        "title": "pikr: Set token budget"
+      },
+      {
+        "command": "pikr.openDashboard",
+        "title": "pikr: Open dashboard"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pikr-sidebar",
+          "title": "pikr",
+          "icon": "images/pikr-activity-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "pikr-sidebar": [
+        {
+          "id": "pikr.dashboardView",
+          "name": "pikr",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "pikr",
+      "properties": {
+        "pikr.tokenBudget": {
+          "type": "number",
+          "default": 4000,
+          "description": "Maximum tokens to include in context"
+        },
+        "pikr.topK": {
+          "type": "number",
+          "default": 20,
+          "description": "Number of chunks to retrieve before reranking"
+        },
+        "pikr.modelUrl": {
+          "type": "string",
+          "default": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx",
+          "description": "URL to download ONNX embedding model"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "lint": "eslint src --ext ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "vitest run",
+    "vscode:prepublish": "npm run build"
+  },
+  "dependencies": {
+    "@lancedb/lancedb": "^0.14.0",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "js-tiktoken": "^1.0.15",
+    "onnxruntime-node": "^1.20.1",
+    "tree-sitter": "^0.21.1",
+    "tree-sitter-javascript": "^0.21.4",
+    "tree-sitter-typescript": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
+    "esbuild": "^0.27.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
+    "typescript": "^5.3.0",
+    "vitest": "^4.1.0"
+  }
+}

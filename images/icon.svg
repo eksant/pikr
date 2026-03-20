@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f0f23"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="22" fill="url(#bg)"/>
+
+  <!-- Subtle inner glow -->
+  <rect width="128" height="128" rx="22" fill="url(#grad)" opacity="0.08"/>
+
+  <!--
+    Letterform "p":
+    Stem: x=24-40, y=22-102
+    Bowl: circle center (60,52) radius 24
+      Intersects stem (x=40) at y = 52 ± sqrt(24²-20²) = 52 ± sqrt(576-400) = 52 ± 13.3
+      Arc from (40,39) clockwise around right to (40,65)
+  -->
+
+  <!-- Stem -->
+  <rect x="24" y="22" width="16" height="80" rx="8" fill="url(#grad)"/>
+
+  <!-- Bowl (right arc of circle: center 60,52 r=24, arc from top to bottom intersection with stem) -->
+  <path d="M 40 39 A 24 24 0 1 1 40 65"
+        fill="none"
+        stroke="url(#grad)"
+        stroke-width="15"
+        stroke-linecap="round"/>
+
+  <!-- Accent dot — bottom right, suggests "precision picking" -->
+  <circle cx="97" cy="97" r="6" fill="#c084fc" opacity="0.9"/>
+</svg>
