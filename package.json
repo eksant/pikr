@@ -2,7 +2,7 @@
   "name": "pikr",
   "displayName": "pikr",
   "description": "Pick the right context — local RAG for AI coding tools",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "eksant",
   "bin": {
     "pikr": "./dist/cli.js"
