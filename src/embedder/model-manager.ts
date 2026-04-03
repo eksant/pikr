@@ -30,58 +30,90 @@ export class ModelManager {
     return path.join(this.modelsDir, TOKENIZER_FILENAME);
   }
 
-  async ensureModel(): Promise<void> {
+  async ensureModel(onProgress?: (msg: string) => void): Promise<void> {
     fs.mkdirSync(this.modelsDir, { recursive: true });
 
     await Promise.all([
-      this.download(MODEL_URL, this.modelPath),
-      this.download(TOKENIZER_URL, this.tokenizerPath),
+      this.download(MODEL_URL, this.modelPath, onProgress),
+      this.download(TOKENIZER_URL, this.tokenizerPath, undefined),
     ]);
   }
 
-  private async download(url: string, dest: string): Promise<void> {
+  private async download(url: string, dest: string, onProgress?: (msg: string) => void): Promise<void> {
     if (fs.existsSync(dest)) return;
 
     // Deduplicate concurrent calls for the same file
     const existing = this.inProgress.get(dest);
     if (existing) return existing;
 
-    const promise = this.doDownload(url, dest).finally(() => this.inProgress.delete(dest));
+    const promise = this.doDownload(url, dest, onProgress).finally(() => this.inProgress.delete(dest));
     this.inProgress.set(dest, promise);
     return promise;
   }
 
-  private async doDownload(url: string, dest: string): Promise<void> {
-    this.logger.info(`Downloading ${path.basename(dest)}...`);
+  private async doDownload(url: string, dest: string, onProgress?: (msg: string) => void): Promise<void> {
+    const name = path.basename(dest);
+    this.logger.info(`Downloading ${name}...`);
     await new Promise<void>((resolve, reject) => {
-      const file = fs.createWriteStream(dest + '.tmp');
-      https
-        .get(url, (res) => {
-          if (
-            res.statusCode &&
-            res.statusCode >= 300 &&
-            res.statusCode < 400 &&
-            res.headers.location
-          ) {
-            file.close();
-            if (fs.existsSync(dest + '.tmp')) fs.unlinkSync(dest + '.tmp');
-            // Resolve any redirect URL (absolute, protocol-relative, or relative)
-            const redirectUrl = new URL(res.headers.location, url).toString();
-            this.doDownload(redirectUrl, dest).then(resolve, reject);
-            return;
+      const tmp = dest + '.tmp';
+      const file = fs.createWriteStream(tmp);
+
+      const cleanup = (err?: Error) => {
+        try { file.destroy(); } catch { /* ignore */ }
+        try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch { /* ignore */ }
+        if (err) reject(err);
+      };
+
+      const req = https.get(url, (res) => {
+        if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          file.close();
+          if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+          // Resolve any redirect URL (absolute, protocol-relative, or relative)
+          const redirectUrl = new URL(res.headers.location, url).toString();
+          this.doDownload(redirectUrl, dest, onProgress).then(resolve, reject);
+          return;
+        }
+
+        if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+          cleanup(new Error(`Download failed: HTTP ${res.statusCode ?? 'unknown'} for ${name}`));
+          return;
+        }
+
+        const total = parseInt(res.headers['content-length'] ?? '0', 10);
+        let received = 0;
+
+        res.on('data', (chunk: Buffer) => {
+          received += chunk.length;
+          if (total > 0 && onProgress) {
+            const pct = Math.round((received / total) * 100);
+            onProgress(`Downloading model... ${pct}%`);
           }
-          res.pipe(file);
-          file.on('finish', () => {
-            file.close();
-            fs.renameSync(dest + '.tmp', dest);
-            this.logger.info(`Downloaded ${path.basename(dest)}`);
-            resolve();
-          });
-        })
-        .on('error', (err) => {
-          if (fs.existsSync(dest + '.tmp')) fs.unlinkSync(dest + '.tmp');
-          reject(err);
         });
+
+        res.on('error', (err) => cleanup(err));
+
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close((closeErr) => {
+            if (closeErr) { cleanup(closeErr); return; }
+            try {
+              fs.renameSync(tmp, dest);
+              this.logger.info(`Downloaded ${name}`);
+              resolve();
+            } catch (err) {
+              cleanup(err as Error);
+            }
+          });
+        });
+        file.on('error', (err) => cleanup(err));
+      });
+
+      // Abort if socket is idle for 60 seconds (stalled connection)
+      req.setTimeout(60_000, () => {
+        req.destroy(new Error(`Download timed out (no data for 60s): ${name}`));
+      });
+
+      req.on('error', (err) => cleanup(err));
     });
   }
 }

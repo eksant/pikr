@@ -52,9 +52,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   if (modelReady) {
     dashboard.setModelStatus('ready');
   } else {
-    dashboard.setModelStatus('loading');
+    dashboard.setModelStatus('loading', 'Downloading model (~80 MB)...');
     modelManager
-      .ensureModel()
+      .ensureModel((msg) => dashboard.setModelStatus('loading', msg))
       .then(() => dashboard.setModelStatus('ready'))
       .catch((err: Error) => dashboard.setModelStatus('error', err.message));
   }
