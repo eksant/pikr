@@ -4,6 +4,9 @@
   "description": "Pick the right context — local RAG for AI coding tools",
   "version": "0.1.4",
   "publisher": "eksant",
+  "bin": {
+    "pikr": "./dist/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/eksant/pikr"

@@ -25,6 +25,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const config = vscode.workspace.getConfiguration('pikr');
 
   const pikrRoot = path.join(os.homedir(), '.pikr');
+
+  // Copy bundled CLI to a stable path so hooks can always find it
+  try {
+    fs.mkdirSync(pikrRoot, { recursive: true });
+    const cliSrc = context.asAbsolutePath('dist/cli.js');
+    const cliDst = path.join(pikrRoot, 'cli.js');
+    fs.copyFileSync(cliSrc, cliDst);
+    fs.chmodSync(cliDst, 0o755);
+  } catch (err) {
+    logger.warn(`Could not copy pikr CLI: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
   const workspacePath =
     vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? context.globalStorageUri.fsPath;
   const wsHash = crypto.createHash('sha256').update(workspacePath).digest('hex').slice(0, 16);

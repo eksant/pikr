@@ -36,12 +36,29 @@ const mcpCtx = esbuild.context({
   logLevel: 'info',
 });
 
-Promise.all([extensionCtx, mcpCtx]).then(async ([ext, mcp]) => {
+const cliCtx = esbuild.context({
+  entryPoints: ['src/cli.ts'],
+  bundle: true,
+  outfile: 'dist/cli.js',
+  external: [],  // fully self-contained — no native modules needed
+  format: 'cjs',
+  platform: 'node',
+  target: 'node20',
+  sourcemap: watch,
+  minify: !watch,
+  banner: { js: '#!/usr/bin/env node' },
+  logLevel: 'info',
+});
+
+const fs = require('fs');
+
+Promise.all([extensionCtx, mcpCtx, cliCtx]).then(async ([ext, mcp, cli]) => {
   if (watch) {
-    await Promise.all([ext.watch(), mcp.watch()]);
+    await Promise.all([ext.watch(), mcp.watch(), cli.watch()]);
     console.log('Watching...');
   } else {
-    await Promise.all([ext.rebuild(), mcp.rebuild()]);
-    await Promise.all([ext.dispose(), mcp.dispose()]);
+    await Promise.all([ext.rebuild(), mcp.rebuild(), cli.rebuild()]);
+    fs.chmodSync('dist/cli.js', 0o755);
+    await Promise.all([ext.dispose(), mcp.dispose(), cli.dispose()]);
   }
 }).catch(() => process.exit(1));
