@@ -81,9 +81,12 @@ export class FileWatcher implements vscode.Disposable {
   }
 
   private isIgnored(filePath: string): boolean {
+    const normalized = filePath.replace(/\\/g, '/');
+    const segments = normalized.split('/');
     return IGNORE_PATTERNS.some((p) => {
-      const pattern = p.replace(/\*\*/g, '').replace(/\*/g, '');
-      return filePath.includes(pattern.replace(/\//g, ''));
+      // Extract bare segment from patterns like **/node_modules/**
+      const segment = p.replace(/^\*\*\//, '').replace(/\/\*\*$/, '');
+      return segments.includes(segment);
     });
   }
 

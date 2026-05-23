@@ -52,7 +52,11 @@ export class Embedder {
     };
 
     const output = await this.session!.run(feeds);
-    const lastHidden = output['last_hidden_state'] ?? output[Object.keys(output)[0]];
+    const outputKey = Object.keys(output)[0];
+    const lastHidden = output['last_hidden_state'] ?? (outputKey ? output[outputKey] : undefined);
+    if (!lastHidden?.data) {
+      throw new Error('ONNX model returned no embedding output');
+    }
     return meanPool(lastHidden.data as Float32Array, seq, DIMS);
   }
 
@@ -87,7 +91,9 @@ function meanPool(data: Float32Array, seq: number, dims: number): Float32Array {
   let norm = 0;
   for (let d = 0; d < dims; d++) norm += result[d] * result[d];
   norm = Math.sqrt(norm);
-  for (let d = 0; d < dims; d++) result[d] /= norm;
+  if (norm > 0) {
+    for (let d = 0; d < dims; d++) result[d] /= norm;
+  }
   return result;
 }
 

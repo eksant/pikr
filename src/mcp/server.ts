@@ -61,7 +61,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     tokenBudget?: number;
   };
 
-  const builder = new ContextBuilder(tokenBudget ?? 8000);
+  const budget =
+    typeof tokenBudget === 'number' && tokenBudget > 0 ? Math.min(tokenBudget, 100_000) : 8000;
+  const builder = new ContextBuilder(budget);
   const chunks = await retriever.retrieve(query);
   const result = builder.build(chunks);
 

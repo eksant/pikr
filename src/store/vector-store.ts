@@ -57,13 +57,14 @@ export class VectorStore {
   async upsert(records: ChunkRecord[]): Promise<void> {
     if (!records.length) return;
     // Delete existing rows for the same ids, then add fresh
-    const ids = records.map((r) => `'${r.id}'`).join(', ');
+    const ids = records.map((r) => `'${r.id.replace(/'/g, "''")}'`).join(', ');
     await this.table!.delete(`id IN (${ids})`);
     await this.table!.add(records);
   }
 
   async deleteByFile(filePath: string): Promise<void> {
-    await this.table!.delete(`filePath = '${filePath.replace(/'/g, "\\'")}'`);
+    const escaped = filePath.replace(/'/g, "''");
+    await this.table!.delete(`filePath = '${escaped}'`);
   }
 
   async search(vector: number[], topK: number): Promise<ChunkRecord[]> {
